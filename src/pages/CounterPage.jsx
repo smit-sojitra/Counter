@@ -22,9 +22,9 @@ export default function CounterPage({ config }) {
     }, []);
 
     const playSound = (type) => {
-        let src = '../../public/sounds/click.mp3';
-        if (type === 'interval') src = '../../public/sounds/interval.mp3';
-        else if (type === 'target') src = '../../public/sounds/target.mp3';
+        let src = '/sounds/click.mp3';
+        if (type === 'interval') src = '/sounds/interval.mp3';
+        else if (type === 'target') src = '/sounds/target.mp3';
         new Audio(src).play().catch(err => console.error('Sound error:', err));
     };
 
