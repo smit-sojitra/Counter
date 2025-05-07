@@ -3,9 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 export default function CounterPage({ config }) {
     const navigate = useNavigate();
-    if (!config) {
-        return <p className="text-center mt-10 text-red-500">Configuration not found. Please go back and configure.</p>;
-    }
+    useEffect(() => {
+        if (!config) {
+            console.log("first")
+            navigate('/');
+        }
+    }, [config, navigate]);
 
     const { initial, target, interval } = config;
     const [count, setCount] = useState(initial);
@@ -19,9 +22,9 @@ export default function CounterPage({ config }) {
     }, []);
 
     const playSound = (type) => {
-        let src = '../../public/sounds/click.wav';
-        if (type === 'interval') src = '../../public/sounds/interval.wav';
-        else if (type === 'target') src = '../../public/sounds/target.wav';
+        let src = '../../public/sounds/click.mp3';
+        if (type === 'interval') src = '../../public/sounds/interval.mp3';
+        else if (type === 'target') src = '../../public/sounds/target.mp3';
         new Audio(src).play().catch(err => console.error('Sound error:', err));
     };
 
@@ -30,12 +33,12 @@ export default function CounterPage({ config }) {
         setCount(next);
         playSound('click');
 
+        const now = Date.now();
+
         if (next % interval === 0 && next < target) {
-            const now = Date.now();
             const diff = Math.round((now - lastIntervalTimeRef.current) / 1000);
             lastIntervalTimeRef.current = now;
 
-            // Format interval time in minutes and seconds
             const minsInterval = Math.floor(diff / 60);
             const secsInterval = diff % 60;
             const formattedInterval = minsInterval > 0
@@ -47,32 +50,54 @@ export default function CounterPage({ config }) {
         }
 
         if (next === target) {
-            const totalTime = Math.round((Date.now() - startTime) / 1000);
+            // Final interval before target
+            const diff = Math.round((now - lastIntervalTimeRef.current) / 1000);
+            const minsInterval = Math.floor(diff / 60);
+            const secsInterval = diff % 60;
+            const formattedInterval = minsInterval > 0
+                ? `${minsInterval} minute${minsInterval > 1 ? 's' : ''} ${secsInterval} second${secsInterval !== 1 ? 's' : ''}`
+                : `${secsInterval} second${secsInterval !== 1 ? 's' : ''}`;
 
-            // Format total time in minutes and seconds
+            setTimes(prev => [
+                ...prev,
+                `Time to reach ${next}: ${formattedInterval}`
+            ]);
+
+            // Total time to reach target
+            const totalTime = Math.round((now - startTime) / 1000);
             const mins = Math.floor(totalTime / 60);
             const secs = totalTime % 60;
-            const formatted = mins > 0
+            const formattedTotal = mins > 0
                 ? `${mins} minute${mins > 1 ? 's' : ''} ${secs} second${secs !== 1 ? 's' : ''}`
                 : `${secs} second${secs !== 1 ? 's' : ''}`;
 
-            setTimes(prev => [...prev, `🎯 Target reached in ${formatted}`]);
+            setTimes(prev => [
+                ...prev,
+                `🎯 Target reached in ${formattedTotal}`
+            ]);
             playSound('target');
         }
     };
 
+
     return (
-        <div className="p-4 max-w-md mx-auto text-center">
-            <h1 className="text-2xl font-bold mb-4">Click Counter</h1>
-            <p className="text-lg mb-2">Count: {count}</p>
-            <button onClick={handleClick} className="bg-green-600 h-[200px] w-[200px] rounded-full  text-white px-6 py-3 text-xl ">
-                Click
-            </button>
-            <div className="mt-6 text-left">
-                <h2 className="font-semibold mb-2">Interval Logs:</h2>
-                {times.map((log, i) => (
-                    <p key={i} className="text-sm">• {log}</p>
-                ))}
+        <div className="p-4 min-h-screen bg-[#313b45] w-screen text-center">
+
+            <button className='button' onClick={() => navigate(-1)}>Back</button>
+            <div className=' flex flex-col justify-center items-center pt-28'>
+
+                <div className="inline-block rounded-full border-6 border-[#4ed6e2] p-2">
+
+                    <button onClick={handleClick} className="bg-[#4ed6e2] border-[#333a47] text-5xl h-[300px] w-[300px] rounded-full text-white px-6 py-3">
+                        {count}
+                    </button>
+                </div>
+                <div className="mt-6 text-left">
+                    <h2 className="font-semibold mb-2 text-white">Interval Logs:</h2>
+                    {times.map((log, i) => (
+                        <p key={i} className="text-sm text-white">{log}</p>
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ import ConfigPage from './pages/ConfigPage';
 import CounterPage from './pages/CounterPage';
 
 export default function App() {
-  const [config, setConfig] = useState(null);
+  const [config, setConfig] = useState('');
 
   return (
     <Routes>

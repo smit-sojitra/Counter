@@ -19,16 +19,29 @@ export default function ConfigPage({ setConfig }) {
     };
 
     return (
-        <div className="p-4 max-w-md mx-auto">
-            <h1 className="text-xl font-bold mb-4">Configure Counter</h1>
+        <div className="p-4 h-screen w-screen text-white bg-[#212121] gap-10 justify-center items-center flex flex-col">
+            <h1 className="text-2xl font-bold mb-4">Configure Counter</h1>
             {error && <p className="text-red-500 mb-2">{error}</p>}
-            <p>Initial</p>
-            <input type="number" value={initial} onChange={e => setInitial(+e.target.value)} className="mb-2 block w-full p-2 border rounded" />
-            <p>Target</p>
-            <input type="number" value={target} onChange={e => setTarget(+e.target.value)} className="mb-2 block w-full p-2 border rounded" />
-            <p>Interval</p>
-            <input type="number" value={interval} onChange={e => setInterval(+e.target.value)} className="mb-2 block w-full p-2 border rounded" />
-            <button onClick={handleSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Start Counter</button>
+            <div className="container">
+                <input inputMode="numeric"
+                    pattern="[0-9]*" required="" name="text" value={initial} onChange={e => setInitial(+e.target.value)} autoComplete="off" className="input" />
+                <label className="label">Initial Count</label>
+            </div>
+
+            <div className="container">
+                <input inputMode="numeric"
+                    required="" name="text" value={target} onChange={e => setTarget(+e.target.value)} autoComplete="off" className="input" />
+                <label className="label">Target</label>
+            </div>
+            <div className="container">
+                <input inputMode="numeric"
+                    required="" name="text" value={interval} onChange={e => setInterval(+e.target.value)} autoComplete="off" className="input" />
+                <label className="label">Interval</label>
+            </div>
+            {/* <button onClick={handleSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Start Counter</button> */}
+
+            <button className='button' onClick={handleSubmit}>Counter</button>
+
         </div>
     );
 }
