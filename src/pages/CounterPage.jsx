@@ -138,29 +138,45 @@ export default function CounterPage({ config, setConfig }) {
             playSound('target');
         }
     };
-
+    const resetHandler = () => {
+        setCount(initial);
+        setTimes([]);
+        setStartTime(Date.now());
+        lastIntervalTimeRef.current = Date.now();
+        localStorage.setItem('counterApp', JSON.stringify({
+            count: initial,
+            times: [],
+            startTime: Date.now(),
+            lastIntervalTime: Date.now(),
+        }));
+    }
 
     return (
             // <BackgroundBeamsWithCollision className="relative min-h-screen">
-             <div className="relative flex min-h-screen w-full justify-center items-center bg-white dark:bg-black">
+             <div className="relative flex min-h-screen w-full justify-center md:items-center bg-black">
+        
       <div
         className={cn(
           "absolute inset-0",
           "[background-size:40px_40px]",
           "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
-          "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+          "[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
         )}
       />
       {/* Radial gradient for the container to give a faded look */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] bg-black"></div>
     
         <div className="p-4 z-10 text-center">
+            <div className='flex justify-between'>
+
             <button className='button' onClick={() => navigate(-1)}>Back</button>
+            <button className='button' onClick={resetHandler}>Reset</button>
+            </div>
             <div className=' flex flex-col justify-center items-center pt-28'>
 
                 <div className="inline-block rounded-full border-4 border-[#119aa7] p-[4px]">
 
-                        <button onClick={handleClick} className="bg-[#01465d] gradient border-[#333a47] text-5xl h-[300px] w-[300px] rounded-full text-white px-6 py-3">
+                        <button onClick={handleClick} className="bg-[#01465d] gradient border-[#333a47] text-5xl h-[330px] w-[330px] rounded-full text-white px-6 py-3">
                         {count}
                     </button>
                 </div>

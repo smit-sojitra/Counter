@@ -48,7 +48,7 @@ export default function ConfigPage({ setConfig }) {
     return (
         <div className="p-4 min-h-screen relative w-screen text-white bg-[#212121] gap-10 justify-center items-center flex flex-col">
             <LampContainer className="absolute" />
-            <h1 className="text-2xl  font-bold mb-4">Configure Counter</h1>
+            <h1 className="text-2xl relative  font-bold mb-4">Counter</h1>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <div className='mt-10 flex flex-col gap-10'>
 
@@ -73,7 +73,7 @@ export default function ConfigPage({ setConfig }) {
             {/* <button onClick={handleSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Start Counter</button> */}
 
             <button className='button' onClick={handleSubmit}>
-                Counter
+                Start
                 <div className="icon-1">
                     <svg
                         xmlnsXlink="http://www.w3.org/1999/xlink"
