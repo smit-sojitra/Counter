@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-export default function CounterPage({ config }) {
+import { BackgroundBeamsWithCollision } from '../components/ui/background-beams-with-collision';
+import { cn } from '../lib/utils';
+export default function CounterPage({ config, setConfig }) {
     const navigate = useNavigate();
+    const { initial, target, interval } = config;
+    useEffect(() => {
+        const savedConfig = localStorage.getItem('counterConfig');
+        setConfig(JSON.parse(savedConfig));
+        console.log('localStorage---', config);
+        console.log('savedConfig', savedConfig);
+    }, []);
     useEffect(() => {
         if (!config) {
             console.log("first")
@@ -10,9 +18,17 @@ export default function CounterPage({ config }) {
         }
     }, [config, navigate]);
 
-    const { initial, target, interval } = config;
-    const [count, setCount] = useState(initial);
-    const [times, setTimes] = useState([]);
+
+    console.log("localStorage:-", localStorage.getItem('counterConfig'));
+    console.log("config:-", config);
+    const [count, setCount] = useState(()=>{
+        const saved = JSON.parse(localStorage.getItem('counterApp'));
+        return saved ? saved.count || 0 : initial;  
+    });
+    const [times, setTimes] = useState(()=>{
+        const saved = JSON.parse(localStorage.getItem('counterApp'));
+        return saved ? saved.times || [] : [];
+    });
     const [startTime, setStartTime] = useState(Date.now());
     const lastIntervalTimeRef = useRef(Date.now());
 
@@ -20,6 +36,50 @@ export default function CounterPage({ config }) {
         setStartTime(Date.now());
         lastIntervalTimeRef.current = Date.now();
     }, []);
+    useEffect(() => {
+        const saved = JSON.parse(localStorage.getItem('counterApp'));
+        console.log("count",saved)
+        if (saved) {
+            setCount(saved.count || 0);
+            setTimes(saved.times || []);
+            setStartTime(saved.startTime || Date.now());
+            lastIntervalTimeRef.current = saved.lastIntervalTime || Date.now();
+        } else {
+            setStartTime(Date.now());
+            lastIntervalTimeRef.current = Date.now();
+        }
+    }, []);
+
+    // Update localStorage when count, times, or startTime changes
+    useEffect(() => {
+        localStorage.setItem('counterApp', JSON.stringify({
+            count,
+            times,
+            startTime,
+            lastIntervalTime: lastIntervalTimeRef.current,
+        }));
+    }, [count, times, startTime]);
+    useEffect(() => {
+        const saved = JSON.parse(localStorage.getItem('counterApp'));
+        if (saved) {
+            setCount(saved.count || 0);
+            setTimes(saved.times || []);
+            setStartTime(saved.startTime || Date.now());
+            lastIntervalTimeRef.current = saved.lastIntervalTime || Date.now();
+        } else {
+            setStartTime(Date.now());
+            lastIntervalTimeRef.current = Date.now();
+        }
+    }, []);
+    useEffect(() => {
+        localStorage.setItem('counterApp', JSON.stringify({
+            count,
+            times,
+            startTime,
+            lastIntervalTime: lastIntervalTimeRef.current,
+        }));
+    }, [count, times, startTime]);
+ 
 
     const playSound = (type) => {
         let src = '/sounds/click.mp3';
@@ -81,24 +141,40 @@ export default function CounterPage({ config }) {
 
 
     return (
-        <div className="p-4 min-h-screen bg-[#313b45] w-screen text-center">
-
+            // <BackgroundBeamsWithCollision className="relative min-h-screen">
+             <div className="relative flex min-h-screen w-full justify-center items-center bg-white dark:bg-black">
+      <div
+        className={cn(
+          "absolute inset-0",
+          "[background-size:40px_40px]",
+          "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
+          "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+        )}
+      />
+      {/* Radial gradient for the container to give a faded look */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
+    
+        <div className="p-4 z-10 text-center">
             <button className='button' onClick={() => navigate(-1)}>Back</button>
             <div className=' flex flex-col justify-center items-center pt-28'>
 
-                <div className="inline-block rounded-full border-6 border-[#4ed6e2] p-2">
+                <div className="inline-block rounded-full border-4 border-[#119aa7] p-[4px]">
 
-                    <button onClick={handleClick} className="bg-[#4ed6e2] border-[#333a47] text-5xl h-[300px] w-[300px] rounded-full text-white px-6 py-3">
+                        <button onClick={handleClick} className="bg-[#01465d] gradient border-[#333a47] text-5xl h-[300px] w-[300px] rounded-full text-white px-6 py-3">
                         {count}
                     </button>
                 </div>
                 <div className="mt-6 text-left">
-                    <h2 className="font-semibold mb-2 text-white">Interval Logs:</h2>
+                    {/* <h2 className="font-semibold mb-2 text-white">Interval /Logs:</h2> */}
                     {times.map((log, i) => (
                         <p key={i} className="text-sm text-white">{log}</p>
                     ))}
                 </div>
             </div>
         </div>
+      
+    </div>
+        // </BackgroundBeamsWithCollision >
+
     );
 }
